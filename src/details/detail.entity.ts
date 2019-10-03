@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   Column,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
+import { ImageEntity } from '../images/image.entity';
 
 @Entity('details')
 export class DetailEntity {
@@ -35,4 +37,7 @@ export class DetailEntity {
 
   @ManyToOne(type => ProductEntity, product => product.details)
   product: ProductEntity;
+
+  @OneToMany(type => ImageEntity, image => image.detail)
+  images: ImageEntity[];
 }

@@ -14,30 +14,33 @@ import { ValidationPipe } from '../shared/validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
 import { DetailDTO } from './detail.dto';
 
-@Controller('api/details')
+@Controller()
 export class DetailsController {
   constructor(private detailService: DetailsService) {}
 
-  @Get(':slug')
+  @Get('api/details/:slug')
   showOneProduct(@Param('slug') slug) {
     return this.detailService.showOne(slug);
   }
 
-  @Post()
+  @Post('api/products/:slugProduct/details')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ValidationPipe())
-  createProduct(@Body() body: DetailDTO) {
-    return this.detailService.create(body);
+  createProduct(
+    @Param('slugProduct') slugProduct: string,
+    @Body() body: DetailDTO,
+  ) {
+    return this.detailService.create(slugProduct, body);
   }
 
-  @Put(':slug')
+  @Put('api/details/:slug')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ValidationPipe())
   updateProduct(@Param('slug') slug: string, @Body() body: Partial<DetailDTO>) {
     return this.detailService.update(slug, body);
   }
 
-  @Delete(':slug')
+  @Delete('api/details/:slug')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ValidationPipe())
   deleteProduct(@Param('slug') slug: string) {

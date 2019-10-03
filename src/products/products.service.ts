@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './product.entity';
 import { Repository } from 'typeorm';
 import { ProductRO, ProductDTO } from './product.dto';
+import { CategoryEntity } from '../categories/category.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
+    @InjectRepository(CategoryEntity)
+    private categoryRepository: Repository<CategoryEntity>,
   ) {}
 
   private productToResponseObject(product: ProductEntity): ProductRO {
@@ -34,9 +37,20 @@ export class ProductsService {
     return this.productToResponseObject(product);
   }
 
-  async create(data: ProductDTO): Promise<ProductRO> {
+  async create(categorySlug: string, data: ProductDTO): Promise<ProductRO> {
+    console.log(categorySlug);
+    const category = await this.categoryRepository.findOne({
+      where: { slug: categorySlug },
+      relations: ['products'],
+    });
+
+    if (!category) {
+      throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+    }
+
     const product = await this.productRepository.create({
       ...data,
+      category,
     });
 
     await this.productRepository.save(product);

@@ -3,18 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DetailEntity } from './detail.entity';
 import { Repository } from 'typeorm';
 import { DetailRO, DetailDTO } from './detail.dto';
+import { ProductEntity } from '../products/product.entity';
 
 @Injectable()
 export class DetailsService {
   constructor(
     @InjectRepository(DetailEntity)
     private detailRepository: Repository<DetailEntity>,
+    @InjectRepository(ProductEntity)
+    private productRepository: Repository<ProductEntity>,
   ) {}
 
   private detailToResponseObject(detail: DetailEntity): DetailRO {
     const responseObject: any = {
       ...detail,
       product: detail.product || null,
+      images: detail.images || null,
     };
 
     return responseObject;
@@ -23,7 +27,7 @@ export class DetailsService {
   async showOne(slug: string): Promise<DetailRO> {
     const detail = await this.detailRepository.findOne({
       where: { slug },
-      relations: ['product'],
+      relations: ['product', 'images'],
     });
 
     if (!detail) {
@@ -33,9 +37,19 @@ export class DetailsService {
     return this.detailToResponseObject(detail);
   }
 
-  async create(data: DetailDTO): Promise<DetailRO> {
+  async create(slugProduct: string, data: DetailDTO): Promise<DetailRO> {
+    const product = await this.productRepository.findOne({
+      where: { slug: slugProduct },
+      relations: ['details', 'category'],
+    });
+
+    if (!product) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+
     const detail = await this.detailRepository.create({
       ...data,
+      product,
     });
 
     await this.detailRepository.save(detail);
@@ -45,7 +59,7 @@ export class DetailsService {
   async update(slug: string, data: Partial<DetailDTO>): Promise<DetailRO> {
     let detail = await this.detailRepository.findOne({
       where: { slug },
-      relations: ['product'],
+      relations: ['product', 'images'],
     });
 
     if (!detail) {
@@ -55,7 +69,7 @@ export class DetailsService {
     await this.detailRepository.update({ id: detail.id }, data);
     detail = await this.detailRepository.findOne({
       where: { slug },
-      relations: ['product'],
+      relations: ['product', 'images'],
     });
 
     return this.detailToResponseObject(detail);
@@ -64,7 +78,7 @@ export class DetailsService {
   async destroy(slug: string): Promise<DetailRO> {
     const detail = await this.detailRepository.findOne({
       where: { slug },
-      relations: ['product'],
+      relations: ['product', 'images'],
     });
 
     if (!detail) {

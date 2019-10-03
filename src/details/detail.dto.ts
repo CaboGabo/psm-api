@@ -1,4 +1,5 @@
-import { ProductRO } from 'src/products/product.dto';
+import { ProductRO } from '../products/product.dto';
+import { ImageRO } from '../images/image.dto';
 
 export class DetailDTO {
   name: string;
@@ -17,4 +18,5 @@ export class DetailRO {
   price: number;
   slug: string;
   product: ProductRO;
+  images?: ImageRO[];
 }

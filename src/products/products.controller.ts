@@ -14,23 +14,26 @@ import { ValidationPipe } from '../shared/validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
 import { ProductDTO } from './product.dto';
 
-@Controller('api/products')
+@Controller()
 export class ProductsController {
   constructor(private productService: ProductsService) {}
 
-  @Get(':slug')
+  @Get('api/products/:slug')
   showOneProduct(@Param('slug') slug) {
     return this.productService.showOne(slug);
   }
 
-  @Post()
+  @Post('api/categories/:categorySlug/products')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ValidationPipe())
-  createProduct(@Body() body: ProductDTO) {
-    return this.productService.create(body);
+  createProduct(
+    @Param('categorySlug') categorySlug: string,
+    @Body() body: ProductDTO,
+  ) {
+    return this.productService.create(categorySlug, body);
   }
 
-  @Put(':slug')
+  @Put('api/products/:slug')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ValidationPipe())
   updateProduct(
@@ -40,7 +43,7 @@ export class ProductsController {
     return this.productService.update(slug, body);
   }
 
-  @Delete(':slug')
+  @Delete('api/products/:slug')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ValidationPipe())
   deleteProduct(@Param('slug') slug: string) {
