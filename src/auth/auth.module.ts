@@ -12,7 +12,7 @@ import { JwtStrategy } from './jwt.strategy';
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => ({
-        secret: 'SECRETKEY', //process.env.SECRET,
+        secret: process.env.SECRET,
         signOptions: { expiresIn: '7d' },
       }),
     }),
