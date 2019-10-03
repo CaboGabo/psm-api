@@ -1,10 +1,13 @@
 import { CategoryEntity } from '../categories/category.entity';
+import { DetailEntity } from '../details/detail.entity';
+import { DetailRO } from '../details/detail.dto';
 import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   Column,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('products')
@@ -35,4 +38,7 @@ export class ProductEntity {
 
   @ManyToOne(type => CategoryEntity, category => category.products)
   category: CategoryEntity;
+
+  @OneToMany(type => DetailEntity, detail => detail.product)
+  details: DetailRO[];
 }

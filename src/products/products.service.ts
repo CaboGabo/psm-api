@@ -15,6 +15,7 @@ export class ProductsService {
     const responseObject: any = {
       ...product,
       category: product.category || null,
+      details: product.details || null,
     };
 
     return responseObject;
@@ -23,7 +24,7 @@ export class ProductsService {
   async showOne(slug: string): Promise<ProductRO> {
     const product = await this.productRepository.findOne({
       where: { slug },
-      relations: ['category'],
+      relations: ['category', 'details'],
     });
 
     if (!product) {
@@ -45,7 +46,7 @@ export class ProductsService {
   async update(slug: string, data: Partial<ProductDTO>): Promise<ProductRO> {
     let product = await this.productRepository.findOne({
       where: { slug },
-      relations: ['category'],
+      relations: ['category', 'details'],
     });
 
     if (!product) {
@@ -55,7 +56,7 @@ export class ProductsService {
     await this.productRepository.update({ id: product.id }, data);
     product = await this.productRepository.findOne({
       where: { slug },
-      relations: ['category'],
+      relations: ['category', 'details'],
     });
 
     return this.productToResponseObject(product);
@@ -64,7 +65,7 @@ export class ProductsService {
   async destroy(slug: string): Promise<ProductRO> {
     const product = await this.productRepository.findOne({
       where: { slug },
-      relations: ['category'],
+      relations: ['category', 'details'],
     });
 
     if (!product) {

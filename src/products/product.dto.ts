@@ -1,4 +1,5 @@
 import { CategoryRO } from '../categories/category.dto';
+import { DetailRO } from '../details/detail.dto';
 export class ProductDTO {
   name: string;
   header: string;
@@ -18,4 +19,5 @@ export class ProductRO {
   description: string;
   slug: string;
   category: CategoryRO;
+  details?: DetailRO[];
 }
