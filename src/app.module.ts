@@ -8,10 +8,30 @@ import { DetailsModule } from './details/details.module';
 import { ImagesModule } from './images/images.module';
 import { ClientsModule } from './clients/clients.module';
 import { OffersModule } from './offers/offers.module';
+import { AuthModule } from './auth/auth.module';
+import { HttpErrorFilter } from './shared/http-error.filter';
+import { LoggingInterceptor } from './shared/logging.interceptor';
+
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
-  imports: [UsersModule, CategoriesModule, ProductsModule, DetailsModule, ImagesModule, ClientsModule, OffersModule],
+  imports: [
+    TypeOrmModule.forRoot(),
+    UsersModule,
+    CategoriesModule,
+    ProductsModule,
+    DetailsModule,
+    ImagesModule,
+    ClientsModule,
+    OffersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: HttpErrorFilter },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+  ],
 })
 export class AppModule {}
